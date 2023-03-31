@@ -7,8 +7,9 @@ from justwatch import JustWatch
 from service_codes import service_codes
 
 # create a dictionary of all service codes 
-with open('../providers.json') as f:
-	providers = json.load(f)
+with open('../providers.json') as fn:
+	providers = json.load(fn)
+
 service_names = {p['short_name']:p['clear_name'] for p in providers}
 service_codes_short = [k for k in service_names.keys()]
 free_services = {p['short_name']:p['clear_name'] for p in providers \
@@ -16,6 +17,7 @@ free_services = {p['short_name']:p['clear_name'] for p in providers \
 					'rent' not in p['monetization_types'] and \
 					'flatrate' not in p['monetization_types']}
 subscription_services = {p['short_name']:p['clear_name'] for p in providers if 'flatrate' in p['monetization_types']}
+
 
 def get_watchlist_titles (letterboxd_username='default', 
 			list_name='watchlist', sort_by='popular', pages=10):
@@ -26,7 +28,6 @@ def get_watchlist_titles (letterboxd_username='default',
 		list_name = ''.join(["-" if char == " " else "" if char == "'" else char for char in list_name]).lower()
 		list_name = "list/" + list_name
 	url_string += list_name + url_postfix
-	print(url_string)
 	ssl._create_default_https_context = ssl._create_unverified_context
 	html_str = ''
 
@@ -39,9 +40,11 @@ def get_watchlist_titles (letterboxd_username='default',
 	html_objects = soup.findAll('li', {'class': 'poster-container'})
 	for html_object in html_objects:
 		object_str = str(html_object).replace('&amp;','&')
+		print(object_str)
 		start_index = object_str.index('<img alt="')+10
 		end_index = object_str.index('"', start_index)
 		movie_name = object_str[start_index:end_index]
+		print(movie_name)
 		titles.append(movie_name)
 	return titles
 
