@@ -7,7 +7,7 @@ from justwatch import JustWatch
 from service_codes import service_codes
 
 # create a dictionary of all service codes 
-with open('movie_providers.json') as f:
+with open('../providers.json') as f:
 	providers = json.load(f)
 service_names = {p['short_name']:p['clear_name'] for p in providers}
 service_codes_short = [k for k in service_names.keys()]
