@@ -724,7 +724,8 @@
           "display_priority": 51,
           "priority": 0,
           "monetization_types": [
-            "free"
+            "free",
+            "flatrate"
           ],
           "addon_packages": null,
           "parent_packages": null
