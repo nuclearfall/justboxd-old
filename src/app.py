@@ -4,6 +4,8 @@ import justboxd
 import pycountry
 import time
 import traceback
+import justbox_ui
+from PySide6.QtUiTools import QUiLoader
 from PySide6.QtCore import (
     Qt, 
     QObject,
@@ -29,6 +31,7 @@ from PySide6.QtWidgets import (
 )
 
 
+# retranslateUi
 class WorkerSignals(QObject):
     '''
     Defines the signals available from a running worker thread.
@@ -101,147 +104,147 @@ class Worker(QRunnable):
             self.signals.finished.emit() 
 
 # Subclass QMainWindow to customize your application's main window
-class MainWindow(QMainWindow):
-    def __init__(self):
-        super().__init__()
+# class MainWindow(justboxdWindow):
+#     def __init__(self):
+#         super().__init__()
 
-        service_names = [val for val in justboxd.subscription_services.values()]
-        country_code_list = [c.alpha_2 for c in pycountry.countries]
-        self.my_services = justboxd.get_user_services()
-        self.threadpool = QThreadPool()
+#         service_names = [val for val in justboxd.subscription_services.values()]
+#         country_code_list = [c.alpha_2 for c in pycountry.countries]
+#         self.my_services = justboxd.get_user_services()
+#         self.threadpool = QThreadPool()
 
-        self.setWindowTitle("JustBoxd")
-        self.layout = QVBoxLayout()
+        # self.setWindowTitle("JustBoxd")
+        # self.layout = QVBoxLayout()
 
-        urlLabel = QLabel("Letterboxd Url")
-        self.urlWidget = QLineEdit()
-        self.layout.addWidget(urlLabel)
-        self.layout.addWidget(self.urlWidget)
+        # urlLabel = QLabel("Letterboxd Url")
+        # self.urlWidget = QLineEdit()
+        # self.layout.addWidget(urlLabel)
+        # self.layout.addWidget(self.urlWidget)
 
-        usernameLabel = QLabel("Letterboxd Username")
-        self.usernameWidget = QLineEdit()
-        self.layout.addWidget(usernameLabel)
-        self.layout.addWidget(self.usernameWidget)
+        # usernameLabel = QLabel("Letterboxd Username")
+        # self.usernameWidget = QLineEdit()
+        # self.layout.addWidget(usernameLabel)
+        # self.layout.addWidget(self.usernameWidget)
 
-        listLabel = QLabel("Letterboxd List")
-        self.listWidget = QLineEdit()
-        self.layout.addWidget(listLabel)
-        self.layout.addWidget(self.listWidget)
-        self.listWidget.setText('watchlist')
+        # listLabel = QLabel("Letterboxd List")
+        # self.listWidget = QLineEdit()
+        # self.layout.addWidget(listLabel)
+        # self.layout.addWidget(self.listWidget)
+        # self.listWidget.setText('watchlist')
 
-        alpha2Label = QLabel("Country Code")
-        self.country_codes = QComboBox()
-        self.country_codes.addItems(country_code_list)
-        self.country_codes.setCurrentIndex(country_code_list.index('US'))
-        self.layout.addWidget(alpha2Label)
-        self.layout.addWidget(self.country_codes)
+        # alpha2Label = QLabel("Country Code")
+        # self.country_codes = QComboBox()
+        # self.country_codes.addItems(country_code_list)
+        # self.country_codes.setCurrentIndex(country_code_list.index('US'))
+        # self.layout.addWidget(alpha2Label)
+        # self.layout.addWidget(self.country_codes)
 
-        servicesLabel = QLabel("Select Services")
-        self.lineEdit = QLineEdit()
-        completer = QCompleter(service_names)
-        completer.setCaseSensitivity(Qt.CaseInsensitive)
-        completer.setCompletionMode(QCompleter.InlineCompletion)
-        completer.activated.connect(self.addService)
-        self.lineEdit.setCompleter(completer)
-        self.lineEdit.returnPressed.connect(self.addService)
-        self.layout.addWidget(servicesLabel)
-        self.layout.addWidget(self.lineEdit)
+        # servicesLabel = QLabel("Select Services")
+        # self.lineEdit = QLineEdit()
+        # completer = QCompleter(service_names)
+        # completer.setCaseSensitivity(Qt.CaseInsensitive)
+        # completer.setCompletionMode(QCompleter.InlineCompletion)
+        # completer.activated.connect(self.addService)
+        # self.lineEdit.setCompleter(completer)
+        # self.lineEdit.returnPressed.connect(self.addService)
+        # self.layout.addWidget(servicesLabel)
+        # self.layout.addWidget(self.lineEdit)
 
-        self.box_layout = QVBoxLayout()
-        self.box = QWidget()
-        self.group = QButtonGroup()
-        self.group.buttonClicked.connect(self.remove_service)
-        removeServiceLabel = QLabel("Remove a Service Below")
-        self.box.setLayout(self.box_layout)
-        self.layout.addWidget(removeServiceLabel)
-        self.layout.addWidget(self.box)
+        # self.box_layout = QVBoxLayout()
+        # self.box = QWidget()
+        # self.group = QButtonGroup()
+        # self.group.buttonClicked.connect(self.remove_service)
+        # removeServiceLabel = QLabel("Remove a Service Below")
+        # self.box.setLayout(self.box_layout)
+        # self.layout.addWidget(removeServiceLabel)
+        # self.layout.addWidget(self.box)
 
 
-        self.saveServicesButton = QPushButton("Save Services", self)
-        self.saveServicesButton.pressed.connect(self.saveUserServices)
-        self.layout.addWidget(self.saveServicesButton)
+        # self.saveServicesButton = QPushButton("Save Services", self)
+        # self.saveServicesButton.pressed.connect(self.saveUserServices)
+        # self.layout.addWidget(self.saveServicesButton)
 
-        self.searchButton = QPushButton("Search", self)
-        self.searchButton.pressed.connect(self.submitSearch)
-        self.layout.addWidget(self.searchButton)
+        # self.searchButton = QPushButton("Search", self)
+        # self.searchButton.pressed.connect(self.submitSearch)
+        # self.layout.addWidget(self.searchButton)
 
-        self.widget = QWidget()
-        self.widget.setLayout(self.layout)
-        self.setCentralWidget(self.widget)
+        # self.widget = QWidget()
+        # self.widget.setLayout(self.layout)
+        # self.setCentralWidget(self.widget)
 
-    def saveUserServices(self):
-        justboxd.save_user_services(self.my_services)
+    # def saveUserServices(self):
+    #     justboxd.save_user_services(self.my_services)
 
-    def submitSearch(self):
-        self.searchButton.setEnabled(False)
-        worker = Worker(self.serviceSearch) # Any other args, kwargs are passed to the run function
-        worker.signals.result.connect(self.print_output)
-        worker.signals.finished.connect(self.thread_complete)
-        worker.signals.progress.connect(self.progress_fn)
+    # def submitSearch(self):
+    #     self.searchButton.setEnabled(False)
+    #     worker = Worker(self.serviceSearch) # Any other args, kwargs are passed to the run function
+    #     worker.signals.result.connect(self.print_output)
+    #     worker.signals.finished.connect(self.thread_complete)
+    #     worker.signals.progress.connect(self.progress_fn)
 
-        self.threadpool.start(worker)
+    #     self.threadpool.start(worker)
 
-    def serviceSearch(self, progress_callback):
-        alpha2 = self.country_codes.currentText()
-        username = self.usernameWidget.text()
-        list_name = self.listWidget.text()
-        url_string = self.urlWidget.text()
-        titles = justboxd.get_watchlist_titles(username=username, 
-                                                url_string=url_string, list_name=list_name)
-        services_short = [k for k in self.my_services.keys()]
-        free_services_short = [k for k in justboxd.free_services.keys()]
-        services_short = services_short + free_services_short
-        streaming_from = justboxd.get_streamers(titles,
-                                services_short, country=alpha2)
-        local_html = justboxd.save_json_to_html(streaming_from)
-        justboxd.save_to_csv(streaming_from) 
-        QDesktopServices.openUrl(QUrl.fromLocalFile(local_html))
-        self.searchButton.setEnabled(True)
-        return "Done."
+    # def serviceSearch(self, progress_callback):
+    #     alpha2 = self.country_codes.currentText()
+    #     username = self.usernameWidget.text()
+    #     list_name = self.listWidget.text()
+    #     url_string = self.urlWidget.text()
+    #     titles = justboxd.get_watchlist_titles(username=username, 
+    #                                             url_string=url_string, list_name=list_name)
+    #     services_short = [k for k in self.my_services.keys()]
+    #     free_services_short = [k for k in justboxd.free_services.keys()]
+    #     services_short = services_short + free_services_short
+    #     streaming_from = justboxd.get_streamers(titles,
+    #                             services_short, country=alpha2)
+    #     local_html = justboxd.save_json_to_html(streaming_from)
+    #     justboxd.save_to_csv(streaming_from) 
+    #     QDesktopServices.openUrl(QUrl.fromLocalFile(local_html))
+    #     self.searchButton.setEnabled(True)
+    #     return "Done."
 
-    def print_output(self, s):
-        print(s)
+    # def print_output(self, s):
+    #     print(s)
 
-    def thread_complete(self):
-        print("THREAD COMPLETE!")
+    # def thread_complete(self):
+    #     print("THREAD COMPLETE!")
 
-    def progress_fn(self, n):
-        print("%d%% done" % n)
+    # def progress_fn(self, n):
+    #     print("%d%% done" % n)
 
-    def initUserServices(self):
-        if self.my_services is None:
-            self.my_services = {}
-        else:
-            for v in self.my_services.values():
-                button = QPushButton(v)
-                self.box_layout.addWidget(button)
-                self.group.addButton(button)
-            self.layout.update()
+    # def initUserServices(self):
+    #     if self.my_services is None:
+    #         self.my_services = {}
+    #     else:
+    #         for v in self.my_services.values():
+    #             button = QPushButton(v)
+    #             self.box_layout.addWidget(button)
+    #             self.group.addButton(button)
+    #         self.layout.update()
 
-    def addService(self):
-        for k, v in justboxd.service_codes.items():
-            if self.lineEdit.text() == v and v not in self.my_services.values():
-                self.my_services[k] = v
-                button = QPushButton(self.lineEdit.text())
-                self.box_layout.addWidget(button)
-                self.group.addButton(button)
-        QTimer.singleShot(0, self.lineEdit.clear)
+    # def addService(self):
+    #     for k, v in justboxd.service_codes.items():
+    #         if self.lineEdit.text() == v and v not in self.my_services.values():
+    #             self.my_services[k] = v
+    #             button = QPushButton(self.lineEdit.text())
+    #             self.box_layout.addWidget(button)
+    #             self.group.addButton(button)
+    #     QTimer.singleShot(0, self.lineEdit.clear)
 
-    def remove_service(self, button):
-        for k, v in self.my_services.items():
-            mark_for_deletion_key = None
-            if v == button.text():
-                mark_for_deletion_key = k
-                button.setParent(None)
-                self.group.removeButton(button)
-                self.box_layout.removeWidget(button)
-                self.layout.update()
-        if mark_for_deletion_key:
-            del(self.my_services[k])
-            del(button)
+    # def remove_service(self, button):
+    #     for k, v in self.my_services.items():
+    #         mark_for_deletion_key = None
+    #         if v == button.text():
+    #             mark_for_deletion_key = k
+    #             button.setParent(None)
+    #             self.group.removeButton(button)
+    #             self.box_layout.removeWidget(button)
+    #             self.layout.update()
+    #     if mark_for_deletion_key:
+    #         del(self.my_services[k])
+    #         del(button)
 
 app = QApplication(sys.argv)
-window = MainWindow()
+window = UIjustboxdWindow()
 window.show()
 window.initUserServices()
 
